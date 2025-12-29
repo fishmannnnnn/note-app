@@ -1,0 +1,7 @@
+Flask>=2.2
+Flask-WTF>=1.0
+Flask-SQLAlchemy>=3.0
+WTForms>=3.0
+bleach>=6.0
+python-dotenv>=1.0
+waitress==2.1.2
