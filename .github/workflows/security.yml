@@ -1,0 +1,29 @@
+name: Security CI (Bandit)
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches: [main] # workflow запускается при обновлении Pull Request
+
+jobs:
+  bandit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 # проверка репозитория
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11 # установка Python
+
+      - name: Install dependencies
+        run: |
+          pip install bandit # установка Bandit
+
+      - name: Run Bandit and fail on high
+        run: |
+          bandit -r . -lll -iii -f json -o bandit.json # запуск Bandit, JSON в bandit.json
+          python -c "import json,sys; d=json.load(open('bandit.json')); high=int(d.get('metrics',{}).get('_totals',{}).get('SEVERITY.HIGH',0)); print(f'SEVERITY.HIGH={high}'); sys.exit(1 if high>0 else 0)"
+          # проверка JSON: если есть хотя бы одна критическая уязвимость - падение
